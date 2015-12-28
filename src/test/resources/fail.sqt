@@ -1,0 +1,9 @@
+#query
+
+select * from city order by id
+
+#result
+
+1|santiago
+3|dakar
+2|prague
