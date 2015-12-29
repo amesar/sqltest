@@ -1,7 +1,7 @@
 package org.amm.sqltest
 
 import java.io.File
-import java.sql.{DriverManager,Statement}
+import java.sql.DriverManager
 import scala.io.Source
 import org.testng.annotations._
 import org.testng.Assert._
@@ -11,7 +11,6 @@ class EmbeddedTest {
   val driverClassName = "org.h2.Driver"
   val conn = DriverManager.getConnection("jdbc:h2:~/test", "sa", "")
   val stmt = conn.createStatement()
-  val reader = new SqlTestFileReader()
 
   @BeforeClass
   def beforeClass() {
@@ -26,23 +25,11 @@ class EmbeddedTest {
 
   @Test
   def test_Success() {
-    assertTrue(compare(dir+"/success.sqt"))
+    assertTrue(SqlTestUtils.validate(conn,dir+"/success.sqt"))
   }
 
   @Test
   def test_Fail() {
-    assertFalse(compare(dir+"/fail.sqt"))
-  }
-
-  def compare(file: String) : Boolean = {
-    val fobj = reader.readResultFile(new File(file))
-    val rseqFromFile = fobj.query.result
-    val rseqFromExe = execute(stmt,fobj.query.query)
-    rseqFromFile.equals(rseqFromExe)
-  }
-
-  def execute(stmt: Statement, query: String) : ResultSeq  = {
-    val rs = stmt.executeQuery(query)
-    ResultUtils.convertToResultSeq(rs)
+    assertFalse(SqlTestUtils.validate(conn,dir+"/fail.sqt"))
   }
 }

@@ -1,10 +1,11 @@
 package org.amm.sqltest
 
 import java.io.File
+import java.sql.Connection
 import scala.io.Source
 import scala.collection.mutable.ListBuffer
 
-class SqlTestFileReader {
+object SqlTestUtils {
   private val NL = "\n"
   private val DELIMITER = "\\|" 
 
@@ -13,7 +14,9 @@ class SqlTestFileReader {
   case object RESULT extends Section
   case object NONE extends Section
 
-  def readResultFile(file: File) : FileObject = {
+  def readFile(filename: String) : QueryObject = readFile(new File(filename))
+
+  def readFile(file: File) : QueryObject = {
     var section: Section = NONE
     val sbuf = new StringBuilder()
     var squery: String = null
@@ -33,9 +36,33 @@ class SqlTestFileReader {
         rseq.append(line.split(DELIMITER).toSeq)
       }
     }
-    FileObject(file, QueryObject(file.getName,squery,rseq))
+    QueryObject(file.getName,squery,rseq)
   }
 
-  def isBlank(str: String) = str.trim.length==0
-  def isContent(line: String) = !line.startsWith("#") && !isBlank(line)
+  def validate(conn: Connection, filename: String, verbose: Boolean=true) : Boolean = {
+    val stmt = conn.createStatement()
+    val qobj = SqlTestUtils.readFile(filename)
+    if (verbose) dump(qobj)
+
+    val rseqFromFile = qobj.result
+    val rs = stmt.executeQuery(qobj.query)
+    val rseqFromExe = ResultUtils.convertToResultSeq(rs)
+    if (verbose) dump(rseqFromExe,"EXECUTE")
+    stmt.close()
+    rseqFromFile.equals(rseqFromExe)
+  }
+
+  def dump(qobj: QueryObject) {
+    println("==== QUERY")
+    println(qobj.query)
+    dump(qobj.result,"FILE")
+  }
+
+  def dump(rseq: ResultSeq, msg: String) {
+    println("==== "+msg)
+    println(ResultUtils.convertToPipe(rseq))
+  }
+
+  private def isBlank(str: String) = str.trim.length==0
+  private def isContent(line: String) = !line.startsWith("#") && !isBlank(line)
 }

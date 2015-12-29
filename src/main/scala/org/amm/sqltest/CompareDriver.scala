@@ -11,6 +11,7 @@ object CompareDriver {
       return
     }
 
+    val verbose = true
     val file = new File(args(0))
     val driverClassName= args(1)
     val url = args(2)
@@ -21,15 +22,7 @@ object CompareDriver {
 
     println("file="+file)
 
-    val reader = new SqlTestFileReader()
-    val fobj = reader.readResultFile(file)
-    dump(fobj)
-
-    val resultFromFile = fobj.query.result
-    val resultFromExe = execute(stmt,fobj.query.query)
-    val res = resultFromFile.equals(resultFromExe)
-
-    dump(resultFromExe,"EXECUTE")
+    val res = SqlTestUtils.validate(conn,args(0),verbose)
     println("\nEQUALS: "+res)
 
     println()
@@ -40,8 +33,7 @@ object CompareDriver {
     ResultUtils.convertToResultSeq(rs)
   }
 
-  def dump(fobj: FileObject) {
-    def qobj = fobj.query
+  def dump(qobj: QueryObject) {
     println("==== QUERY")
     println(qobj.query)
     dump(qobj.result,"FILE")

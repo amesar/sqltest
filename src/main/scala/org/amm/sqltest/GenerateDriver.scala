@@ -1,7 +1,7 @@
 package org.amm.sqltest
 
 import java.io._
-import java.sql.{Connection,DriverManager,Statement}
+import java.sql.{DriverManager,Statement}
 
 object GenerateDriver {
   private val NL = "\n"
@@ -25,15 +25,14 @@ object GenerateDriver {
     val ofile = odir + "/" + ifile.getName
     println("ifile="+ifile+" ofile="+ofile)
 
-    val reader = new SqlTestFileReader()
-    val fobj = reader.readResultFile(ifile)
+    val qobj = SqlTestUtils.readFile(ifile)
 
-    val rs = stmt.executeQuery(fobj.query.query)
+    val rs = stmt.executeQuery(qobj.query)
     val rseq = ResultUtils.convertToResultSeq(rs)
 
     new PrintWriter(ofile) { 
       write("#query"+NL)
-      write(fobj.query.query+NL)
+      write(qobj.query+NL)
       write(NL)
       write("#result"+NL)
       write(ResultUtils.convertToPipe(rseq)+NL)
