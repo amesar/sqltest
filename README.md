@@ -7,7 +7,9 @@ Then you validate the query against the results.
 
 ## Sample 
 
-### Create table - [create.ddl](src/test/resources/create.ddl)
+### Create and populate table
+
+#### Create table - [create.ddl](src/test/resources/create.ddl)
 ```
 create table if not exists city (
   id int,
@@ -15,7 +17,7 @@ create table if not exists city (
 ) 
 ```
 
-### Insert rows - [insert.sql](src/test/resources/insert.sql)
+#### Insert rows - [insert.sql](src/test/resources/insert.sql)
 ```
 insert into city (id, name) values (1,'santiago') ;
 insert into city (id, name) values (2,'prague') ;
