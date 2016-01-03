@@ -13,6 +13,11 @@ object GenerateDriver {
     }
 
     val ifile = new File(args(0))
+    println("InputFile="+ifile)
+    if (!ifile.exists) {
+      println("ERROR: File does not exist "+ifile)
+      return
+    }
     val driverClassName= args(1)
     val url = args(2)
     Class.forName(driverClassName)
@@ -23,9 +28,14 @@ object GenerateDriver {
     val odir = "out"
     (new File(odir)).mkdirs()
     val ofile = odir + "/" + ifile.getName
-    println("ifile="+ifile+" ofile="+ofile)
+    println("OutputFile="+ofile)
 
     val qobj = SqlTestUtils.readFile(ifile)
+    println("Query: "+qobj.query)
+    if (qobj.query==null) {
+      println("ERROR: No #query section in "+ifile)
+      return
+    }
 
     val rs = stmt.executeQuery(qobj.query)
     val rseq = ResultUtils.convertToResultSeq(rs)

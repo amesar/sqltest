@@ -47,7 +47,7 @@ object SqlTestUtils {
     val rseqFromFile = qobj.result
     val rs = stmt.executeQuery(qobj.query)
     val rseqFromExe = ResultUtils.convertToResultSeq(rs)
-    if (verbose) dump(rseqFromExe,"EXECUTE")
+    if (verbose) dump(rseqFromExe,"EXECUTE #results="+rseqFromExe.size)
     stmt.close()
     rseqFromFile.equals(rseqFromExe)
   }
@@ -55,7 +55,7 @@ object SqlTestUtils {
   def dump(qobj: QueryObject) {
     println("==== QUERY")
     println(qobj.query)
-    dump(qobj.result,"FILE")
+    dump(qobj.result,"FILE #results="+qobj.result.size)
   }
 
   def dump(rseq: ResultSeq, msg: String) {

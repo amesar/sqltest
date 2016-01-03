@@ -32,15 +32,4 @@ object CompareDriver {
     val rs = stmt.executeQuery(query)
     ResultUtils.convertToResultSeq(rs)
   }
-
-  def dump(qobj: QueryObject) {
-    println("==== QUERY")
-    println(qobj.query)
-    dump(qobj.result,"FILE")
-  }
-
-  def dump(rseq: ResultSeq, msg: String) {
-    println("==== "+msg)
-    println(ResultUtils.convertToPipe(rseq))
-  }
 }
